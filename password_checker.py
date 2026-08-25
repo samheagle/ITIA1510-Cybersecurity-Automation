@@ -9,10 +9,10 @@ rotation_interval=input('In months, how often will this password be changed?')
 password_length = len(password)
 length_score = password_length * 10
 # how many times the password will be rotated over 3 years
-rotation_count = 36 // rotation_interval
+rotation_count = 36 // int(rotation_interval)
 
 ## converts int values to str
-# instead of doing individually in score output with str(int(x))
+# instead of doing individually in score gmailoutput with str(int(x))
 # prevents typeerror
 password_length=str(password_length)
 length_score=str(length_score)
@@ -25,11 +25,10 @@ print('   PASSWORD AUDIT REPORT')
 print('========================================')
 print('Account:           '+account)
 print('Username:          '+username)
-print('Password length:   '+password_length+'characters')
-print('Length score:      '+length_score+'points')
+print('Password length:   '+password_length+' characters')
+print('Length score:      '+length_score+' points')
 print('Rotation interval: '+rotation_interval)
 print('Rotations (3 yr):  '+rotation_count)
 print('----------------------------------------')
 print('NOTE: Classification requires conditionals -- coming in Week 02.')
 print('========================================')
-      
