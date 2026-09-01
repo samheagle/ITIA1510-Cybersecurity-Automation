@@ -35,7 +35,7 @@ else:
     not_username='CRITICAL — password must not match username'
 
 ## confirms password rotation frequency is acceptable
-if int(rotation_interval) >=12:
+if int(rotation_interval) >12:
     rotation_verdict = 'WARNING — rotation interval exceeds recommended maximum of 12 months'
 elif int(rotation_interval) >=6 and int(rotation_interval) <13:
     rotation_verdict = 'ACCEPTABLE — rotation interval within recommended range'
