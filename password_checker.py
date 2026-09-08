@@ -1,8 +1,8 @@
 ##set how many passwords collected
 BATCH_SIZE = int(input('How many total passwords to be audited?'))
 COUNT = 0
-##these variables must be GLOBAL to appear in the final audit
-##or they dont exist after their initial review
+##these variables must be GLOBAL to be correct in the final audit
+##or they dont exist after their initial review- wont increment & appear in final audit
 total_pass=0
 total_fail=0
 total_critical=0
@@ -20,6 +20,7 @@ while COUNT < BATCH_SIZE:
     rotation_count = str(36 // int(rotation_interval))
     ## declaring length score variable
     # will be defined as the desired str output for the audit report
+    # not relevant to pass/fail
     if int(password_length) <8:
         length_verdict = "WEAK — does not meet minimum length requirements"
     elif int(password_length) >=8 and int(password_length)<12:
@@ -27,8 +28,10 @@ while COUNT < BATCH_SIZE:
     elif int(password_length) >=12 and int(password_length)<15:
         length_verdict = "GOOD — acceptable length for most systems"
     else:
+        #this is the only length that passes
         length_verdict = "STRONG — meets NIST SP 800-63B recommendations"
     ## checks if password contains a digit and defines variable for str output in audit
+    #password will fail if doesnt contain digit
     has_digit = False
     ##counts how many char in input
     for char in password:
@@ -40,9 +43,10 @@ while COUNT < BATCH_SIZE:
         not_username='NO'
     else:
         not_username='CRITICAL — password must not match username'
-        #is there only one critical warning in here?
+        #is there only one critical warning in here? (yes)
         total_critical=total_critical+1
     ## confirms password rotation frequency is acceptable
+    #just for evaluation, not pass/fail relevant
     if int(rotation_interval) >12:
         rotation_verdict = 'WARNING — rotation interval exceeds recommended maximum of 12 months'
     elif int(rotation_interval) >=6 and int(rotation_interval) <13:
@@ -54,6 +58,7 @@ while COUNT < BATCH_SIZE:
     # 15 char minimum is not reflected in length classification, but is requirement for overall pass/fail
     # consider remodeling length classification to reflect clearer 15 character minimum
     length_ok = int(password_length) >= 15
+    #to pass, password must be 15+ char, have a digit, and not match user. nothing else relevant to pass/fail
     if length_ok and has_digit == True and not_username == 'NO':
         overall_pass = 'PASS — password meets all checked criteria'
         #total_pass variable is used to track how many passwords pass the audit, and total_fail tracks how many failed
@@ -61,10 +66,9 @@ while COUNT < BATCH_SIZE:
     else:
         overall_pass = 'OVERALL: FAIL — see findings above'
         total_fail=total_fail+1
-
     ## score evaluation output
     #this will print 3 times once for each password
-    #in future consider storing the password outputs to a list and printing them all at once at the end of the batch for one big report
+    #in future consider storing the password outputs to a list and printing them all at once at the end of the batch for one big report/cohesiveness
     print('========================================')
     print('   PASSWORD AUDIT REPORT:' + str(COUNT+1)+' of '+str(BATCH_SIZE))
     print('========================================')
@@ -82,8 +86,9 @@ while COUNT < BATCH_SIZE:
     print('----------------------------------------')
     print('OVERALL:           '+overall_pass)
     print('========================================')
-    ##if this is the last password, print the summary of the batch audit
+    ##increment counter to log password as evaluated
     COUNT=COUNT+1
+    ##if this is the last password, print the summary of the batch audit
     if COUNT==BATCH_SIZE:
         print('========================================')
         print('   PASSWORD AUDIT SUMMARY:')
