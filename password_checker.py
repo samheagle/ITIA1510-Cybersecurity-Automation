@@ -1,5 +1,5 @@
 ##set how many passwords collected
-BATCH_SIZE = 3
+BATCH_SIZE = int(input('How many total passwords to be audited?'))
 COUNT = 0
 ##these variables must be GLOBAL to appear in the final audit
 ##or they dont exist after their initial review
@@ -95,6 +95,3 @@ while COUNT < BATCH_SIZE:
         print('----------------------------------------')
         print('NOTE: Input is still hardcoded -- file reading coming in Week 08')
         print('========================================')
-
-
-
