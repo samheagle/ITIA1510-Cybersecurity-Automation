@@ -113,6 +113,18 @@ def audit_password(account, username, password, rotation_interval):
     return passed, failed, critical
 
 ##runs the evaluation!
-while count < batch_size:
-    audit_password(account, username, password, rotation_interval)
-    count += 1
+if __name__ == '__main__':
+    while count < batch_size:
+        audit_password(account, username, password, rotation_interval)
+        count += 1
+    if count==batch_size:
+        print('========================================')
+        print('   PASSWORD AUDIT SUMMARY')
+        print('========================================')
+        print('Total passwords checked:')
+        print('Total passed:           '+str(total_pass))
+        print('Total failed:           '+str(total_fail))
+        print('Total critical warnings:'+str(critical_count))
+        print('----------------------------------------')
+        print('NOTE: Input is still hardcoded--file reading coming in Week 08')
+        print('========================================')
