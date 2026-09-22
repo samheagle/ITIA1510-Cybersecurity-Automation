@@ -1,12 +1,12 @@
 ##set how many passwords collected
-BATCH_SIZE = int(input('How many total passwords to be audited?'))
-COUNT = 0
+batch_size = 3
+count = 0
 ##these variables must be GLOBAL to be correct in the final audit
 ##or they dont exist after their initial review- wont increment & appear in final audit
 total_pass=0
 total_fail=0
-total_critical=0
-while COUNT < BATCH_SIZE:
+critical_count=0
+while count < batch_size:
     ##   collects initial data from user & assigns variables
     # "for" = service: google, email, vpn, social media
     account=input('What is this account for?')
@@ -44,7 +44,7 @@ while COUNT < BATCH_SIZE:
     else:
         not_username='CRITICAL — password must not match username'
         #is there only one critical warning in here? (yes)
-        total_critical=total_critical+1
+        critical_count=critical_count+1
     ## confirms password rotation frequency is acceptable
     #just for evaluation, not pass/fail relevant
     if int(rotation_interval) >12:
@@ -70,7 +70,7 @@ while COUNT < BATCH_SIZE:
     #this will print 3 times once for each password
     #in future consider storing the password outputs to a list and printing them all at once at the end of the batch for one big report/cohesiveness
     print('========================================')
-    print('   PASSWORD AUDIT REPORT:' + str(COUNT+1)+' of '+str(BATCH_SIZE))
+    print('   PASSWORD AUDIT REPORT:' + str(count+1)+' of '+str(batch_size))
     print('========================================')
     print('Account:           '+account)
     print('Username:          '+username)
@@ -87,16 +87,16 @@ while COUNT < BATCH_SIZE:
     print('OVERALL:           '+overall_pass)
     print('========================================')
     ##increment counter to log password as evaluated
-    COUNT=COUNT+1
+    count=count+1
     ##if this is the last password, print the summary of the batch audit
-    if COUNT==BATCH_SIZE:
+    if count==batch_size:
         print('========================================')
         print('   PASSWORD AUDIT SUMMARY:')
         print('========================================')
-        print('Total passwords checked: '+str(BATCH_SIZE))
+        print('Total passwords checked: '+str(batch_size))
         print('Total passed:            '+str(total_pass))
         print('Total failed:            '+str(total_fail))
-        print('Total critical warnings: '+str(total_critical))
+        print('Total critical warnings: '+str(critical_count))
         print('----------------------------------------')
         print('NOTE: Input is still hardcoded -- file reading coming in Week 08')
         print('========================================')
