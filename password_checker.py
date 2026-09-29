@@ -119,7 +119,7 @@ def audit_password(account, username, password, rotation_interval):
     return passed, failed, critical
 
 ##runs the evaluation!
-#will only print audit summary if run from
+#will only print audit summary if run from the main branch
 if __name__ == '__main__':
     while count < batch_size:
         audit_password(account, username, password, rotation_interval)
