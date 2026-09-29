@@ -19,13 +19,15 @@ password_length = len(password)
 
 ##checks if password meets minimum pass/fail length requirements and def audit final output str
 def check_length(password):
-    if int(password_length) <8:
-        length_verdict = "WEAK — does not meet minimum length requirements"
+    """Checks password length against NIST SP 800-63B thresholds. Takes a password string. Returns (length_ok: bool, length_verdict: str)."""
+    password_length = int(len(password))
+    if password_length<8:
+        length_verdict="WEAK — does not meet minimum length requirements"
         length_ok=False
-    elif int(password_length) >=8 and int(password_length)<12:
+    elif password_length>=8 and password_length<12:
         length_verdict = "MODERATE — meets minimum but falls short of NIST recommendations"
         length_ok=False
-    elif int(password_length) >=12 and int(password_length)<15:
+    elif password_length >=13 and password_length<15:
         length_verdict = "GOOD — acceptable length for most systems"
         length_ok=False
     else:
@@ -35,6 +37,7 @@ def check_length(password):
     return length_ok, length_verdict
 ##checks if password contains a digit and defines variable for pass/fail
 def check_digit(password):
+    """Check every character in input password against digits. Returns (has_digit: bool)."""
     #stays false=fail audit
     has_digit=False
     #checks each char is digit/letter
@@ -46,6 +49,7 @@ def check_digit(password):
     return has_digit
 ##checks if username and password match and defines variable for pass/fail
 def check_username(password, username):
+    """Checks password against username. Returns (not_username=bool, username_match=str)."""
     not_username = password != username
     if not_username == False:
         username_match = "CRTICAL - password must not match username"
@@ -54,6 +58,7 @@ def check_username(password, username):
     return not_username, username_match
 ##checks if rotation interval meets pass/fail requirements and def audit final output str
 def check_rotation(rotation_interval):
+    """Ensures password is rotated at least every year. Returns (rotation_ok:bool, rotation_verdict:str)."""
     if int(rotation_interval) >12:
         rotation_verdict = 'WARNING — rotation interval exceeds recommended maximum of 12 months'
         rotation_ok=False
@@ -67,6 +72,7 @@ def check_rotation(rotation_interval):
     return rotation_ok, rotation_verdict
 ##final pass/fail audit
 def audit_password(account, username, password, rotation_interval):
+    """Checks if input password is >=15ch, has a digit, doesnt match username, and is rotated >=yearly. Returns (return passed:int, failed:int, critical:int)."""
     ##calls above functions to evaluate the password
     length_ok, length_verdict = check_length(password)
     has_digit = check_digit(password)
@@ -113,6 +119,7 @@ def audit_password(account, username, password, rotation_interval):
     return passed, failed, critical
 
 ##runs the evaluation!
+#will only print audit summary if run from
 if __name__ == '__main__':
     while count < batch_size:
         audit_password(account, username, password, rotation_interval)
