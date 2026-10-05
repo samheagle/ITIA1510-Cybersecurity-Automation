@@ -1,5 +1,4 @@
-
-from password_checker import check_length, check_digit, check_username, check_rotation
+from password_checker import check_length, check_digit, check_username, check_rotation, check_breach, known_breached
 
 ##check_digit
 check1=check_digit("hello")
@@ -8,6 +7,8 @@ print("PASS: checkdigit failed password without digit")
 check2=check_digit("hello5")
 assert check2==True
 print("PASS: checkdigit passed password with digit")
+assert check1==False and check2==True
+print("PASS: !! checkdigit functioning")
 
 #check_length
 check3=check_length("1234567890123456")
@@ -19,6 +20,8 @@ print("PASS: checklength passed =15ch")
 check5=check_length("123")
 assert check5[0]==False
 print("PASS: checklength failed <15ch")
+assert check3[0]==True and check4[0]==True and check5[0]==False
+print("PASS: !!checklength functioning")
 
 #check_username
 check6=check_username('123','123')
@@ -27,6 +30,8 @@ print("PASS: checkusername failed user==pass")
 check7=check_username('123','223')
 assert check7[0]==True
 print("PASS: checkusername passed user/=pass")
+assert check6[0]==False and check7[0]==True
+print("PASS: !! checkusername functioning")
 
 #check_rotation
 check8=check_rotation(6)
@@ -38,3 +43,15 @@ print("PASS: checkrotation passes 'excellent' =5mo")
 check10=check_rotation(13)
 assert check10[0]==False
 print("PASS: checkrotation failed 'warning' >12mo")
+assert check8[0]==True and check9[0]==True and check10[0]==False
+print("PASS: !! checkrotation functioning")
+
+#check_breach
+check11=check_breach("password")
+assert check11[0]==False
+print("PASS: checkbreach failed breached")
+check12=check_breach("notbreached")
+assert check12[0]==True
+print("PASS: checkbreach passed not breached")
+assert check11[0]==False and check12[0]==True
+print("PASS: !! checkbreach functioning")
