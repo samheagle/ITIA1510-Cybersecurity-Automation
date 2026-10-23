@@ -1,7 +1,0 @@
-total = 0
-for i in range(5):
-    bytes = int(input("Enter bytes: "))
-    total = total + bytes
-print(total)
-
-#ignore this i use it for kahoot/blooket screenshots and delete it later
