@@ -1,3 +1,4 @@
+import json
 #policy has to be global so that check_length and check_rotation can access it
 #a policy is easier to read and edit besides a bunch of hardcoded values spread out through funcs
 policy = {
@@ -155,7 +156,15 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     report_lines.append('OVERALL:           '+overall)
     report_lines.append('========================================')
     return passed, failed, critical
-
+def save_summary(summary, filepath):
+    """Saves the summary dictionary to a JSON file."""
+    with open(filepath, "w") as f:
+        json.dump(summary, f, indent=2)
+def load_summary(filepath):
+    """Loads the summary dictionary from a JSON file."""
+    with open(filepath, "r") as f:
+        summary = json.load(f)
+    return summary
 ##runs the evaluation!
 #will only print audit summary if run from the main branch
 if __name__ == '__main__':
@@ -194,3 +203,4 @@ if __name__ == '__main__':
     for line in report_lines:
         print(line)
     write_report(report_lines, "report.txt")
+    save_summary(summary, "audit_summary.json")

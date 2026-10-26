@@ -11,7 +11,7 @@ Rotations (3 yr):  3
 Length verdict:    MODERATE — meets minimum but falls short of NIST recommendations
 Digit found:       True
 Username match:    NO
-Breach check:      CRITICAL -- password found in known breach list
+Password breached:      CRITICAL -- password found in known breach list
 Rotation verdict:  EXCELLENT — frequent rotation policy detected
 ----------------------------------------
 OVERALL:           OVERALL: FAIL - see findings above
@@ -29,7 +29,7 @@ Rotations (3 yr):  1
 Length verdict:    WEAK — does not meet minimum length requirements
 Digit found:       False
 Username match:    CRITICAL - password must not match username
-Breach check:      NO
+Password breached:      NO
 Rotation verdict:  WARNING — rotation interval exceeds recommended maximum of 12 months
 ----------------------------------------
 OVERALL:           OVERALL: FAIL - see findings above
@@ -47,7 +47,7 @@ Rotations (3 yr):  12
 Length verdict:    STRONG — meets NIST SP 800-63B recommendations
 Digit found:       True
 Username match:    NO
-Breach check:      NO
+Password breached:      NO
 Rotation verdict:  EXCELLENT — frequent rotation policy detected
 ----------------------------------------
 OVERALL:           OVERALL: PASS - password meets all checked criteria
@@ -65,7 +65,7 @@ Rotations (3 yr):  6
 Length verdict:    MODERATE — meets minimum but falls short of NIST recommendations
 Digit found:       True
 Username match:    NO
-Breach check:      NO
+Password breached:      NO
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
 ----------------------------------------
 OVERALL:           OVERALL: FAIL - see findings above
@@ -83,7 +83,7 @@ Rotations (3 yr):  6
 Length verdict:    STRONG — meets NIST SP 800-63B recommendations
 Digit found:       True
 Username match:    NO
-Breach check:      NO
+Password breached:      NO
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
 ----------------------------------------
 OVERALL:           OVERALL: PASS - password meets all checked criteria

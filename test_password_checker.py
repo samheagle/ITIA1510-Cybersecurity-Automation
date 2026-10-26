@@ -1,4 +1,4 @@
-from password_checker import (check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy)
+from password_checker import (check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy, save_summary, load_summary)
 
 known_breached = load_breached("breached.txt")
 credentials = load_credentials("credentials.txt")
@@ -171,7 +171,7 @@ assert check1==True and check2==True
 print("PASS: !! loadbreached functioning")
 
 #write_report
-check1==False
+check1=False
 
 write_report(checklines, "test_report.txt")
 with open("test_report.txt", "r") as f:
@@ -184,3 +184,35 @@ print("PASS: write_report saves the correct text")
 
 assert check1==True
 print("PASS: !! write_report functioning")
+
+#save&loadsummary
+check1=False
+check2=False
+
+checklines={"total": 7, "passed": 5, "failed": 2, "critical": 1, "failed_accounts": ["account1", "account2"], "critical_accounts": ["account3"]}
+save_summary(checklines, "test_summary.json")
+checklines2=load_summary("test_summary.json")
+assert checklines2==checklines
+if checklines2==checklines:
+    check1=True
+print("PASS: savesummary and loadsummary match inoutput")
+
+check=isinstance(checklines2["failed_accounts"], list)
+assert check==True
+if check==True:
+    check2=True
+print("PASS: failedaccounts list")
+
+check3=False
+
+with open("test_summary.json", "r") as f:
+    checklines2=f.read()
+for cred in credentials:
+    if cred["password"] in checklines2:
+        check3=True
+
+assert check3==False
+print("PASS: summary does not contain passwords")
+
+assert check1==True and check2==True and check3==False
+print("PASS: !! savesummary and loadsummary functioning")
