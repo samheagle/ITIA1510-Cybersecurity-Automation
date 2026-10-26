@@ -1,5 +1,0 @@
-total = 0
-for i in range(5):
-    bytes = int(input("Enter bytes: "))
-    total = total + bytes
-print(total)

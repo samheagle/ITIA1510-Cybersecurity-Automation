@@ -149,7 +149,7 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     report_lines.append('Length verdict:    '+length_verdict)
     report_lines.append('Digit found:       '+str(has_digit))
     report_lines.append('Username match:    '+username_match)
-    report_lines.append('Breach check:      '+breached_verdict)
+    report_lines.append('Password breached:      '+breached_verdict)
     report_lines.append('Rotation verdict:  '+rotation_verdict)
     report_lines.append('----------------------------------------')
     report_lines.append('OVERALL:           '+overall)
