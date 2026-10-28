@@ -1,0 +1,13 @@
+{
+  "total": 7,
+  "passed": 5,
+  "failed": 2,
+  "critical": 1,
+  "failed_accounts": [
+    "account1",
+    "account2"
+  ],
+  "critical_accounts": [
+    "account3"
+  ]
+}

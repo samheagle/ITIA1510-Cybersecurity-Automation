@@ -1,4 +1,4 @@
-import json
+import json, os
 #policy has to be global so that check_length and check_rotation can access it
 #a policy is easier to read and edit besides a bunch of hardcoded values spread out through funcs
 policy = {
@@ -7,7 +7,8 @@ policy = {
     "max_rotation_months": 12,
     "good_rotation_months": 6,
     "require_digit": True,
-    "check_breach_list": True
+    "check_breach_list": True,
+    "history_runs":3,
 }
 
 def load_breached(filepath):
@@ -165,6 +166,35 @@ def load_summary(filepath):
     with open(filepath, "r") as f:
         summary = json.load(f)
     return summary
+def load_history(filepath):
+    """Loads the history dictionary from a JSON file."""
+    if os.path.exists(filepath):
+        with open(filepath, "r") as f:
+            history = json.load(f)
+    else:
+        history = {}
+    return history
+
+def add_to_history(history, summary, keep):
+    """keeps a count of how many passwords ran passed failed"""
+    if history:
+        #use newest, old entries could be trimmed
+        run_number=history[-1]["run"] + 1
+    else:
+        run_number=1
+    entry={
+        "run": run_number,
+        "passed": summary["passed"],
+        "failed": summary["failed"],
+        "critical_accounts": summary["critical_accounts"]}
+    history=[*history, entry]
+    return history[-keep:]
+
+def save_history(history, filepath):
+    """saves history to JSON file."""
+    with open(filepath, "w") as file:
+        json.dump(history, file, indent=2)
+
 ##runs the evaluation!
 #will only print audit summary if run from the main branch
 if __name__ == '__main__':
@@ -204,3 +234,6 @@ if __name__ == '__main__':
         print(line)
     write_report(report_lines, "report.txt")
     save_summary(summary, "audit_summary.json")
+    history = load_history("audit_history.json")
+    history = add_to_history(history, summary, policy["history_runs"])
+    save_history(history, "audit_history.json")

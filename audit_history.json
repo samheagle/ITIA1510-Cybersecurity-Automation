@@ -1,0 +1,11 @@
+[
+  {
+    "run": 1,
+    "passed": 2,
+    "failed": 3,
+    "critical_accounts": [
+      "Gmail",
+      "SSH Server"
+    ]
+  }
+]
