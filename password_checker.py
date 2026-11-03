@@ -66,13 +66,15 @@ def check_digit(password):
     """Check every character in input password against digits. Returns (has_digit: bool)."""
     #stays false=fail audit
     has_digit=False
+    digit_verdict="NO"
     #checks each char is digit/letter
     for char in password:
         #if one found
         if char in '0123456789':
             #passes audit
             has_digit=True
-    return has_digit
+            digit_verdict="YES"
+    return has_digit, digit_verdict
 ##checks if username and password match and defines variable for pass/fail
 def check_username(password, username):
     """Checks password against username. Returns (not_username=bool, username_match=str)."""
@@ -88,9 +90,12 @@ def check_rotation(rotation_interval, policy):
     if int(rotation_interval) >policy["max_rotation_months"]:
         rotation_verdict = 'WARNING — rotation interval exceeds recommended maximum of 12 months'
         rotation_ok=False
-    elif int(rotation_interval) >=policy["good_rotation_months"] and int(rotation_interval)<policy["max_rotation_months"]:
+    elif int(rotation_interval) ==policy["max_rotation_months"]:
         rotation_verdict = 'ACCEPTABLE — rotation interval within recommended range'
         rotation_ok=True
+    elif int(rotation_interval) >=policy["good_rotation_months"] and int(rotation_interval)<policy["max_rotation_months"]:
+        rotation_verdict = 'ACCEPTABLE — rotation interval within recommended range'
+        rotation_ok=True    
     else:
         #if rotated every >=5 mo
         rotation_verdict = 'EXCELLENT — frequent rotation policy detected'
@@ -109,7 +114,7 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     """Checks if input password is >=15ch, has a digit, doesnt match username, and is rotated >=yearly. Returns (return passed:int, failed:int, critical:int)."""
     ##calls above functions to evaluate the password
     length_ok, length_verdict = check_length(password, policy)
-    has_digit = check_digit(password)
+    has_digit, digit_verdict = check_digit(password)
     not_username, username_match= check_username(password, username)
     rotation_ok, rotation_verdict = check_rotation(rotation_interval, policy)
     not_breached, breached_verdict = check_breach(password, known_breached)
@@ -120,12 +125,12 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     overall_pass = length_ok and has_digit and not_username and not_breached
     ##assigns tuple 1/0 values, passed failed critial
     if overall_pass:
-        overall = "OVERALL: PASS - password meets all checked criteria"
+        overall = "PASS - password meets all checked criteria"
         passed = 1
         failed = 0
         count+=1
     else:
-        overall = "OVERALL: FAIL - see findings above"
+        overall = "FAIL - password does not meet all checked criteria"
         passed = 0
         failed = 1
         count+=1
@@ -149,9 +154,9 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     report_lines.append('Rotations (3 yr):  '+rotation_count)
     report_lines.append('----------------------------------------')
     report_lines.append('Length verdict:    '+length_verdict)
-    report_lines.append('Digit found:       '+str(has_digit))
+    report_lines.append('Digit found:       '+digit_verdict)
     report_lines.append('Username match:    '+username_match)
-    report_lines.append('Password breached:      '+breached_verdict)
+    report_lines.append('Breach check:      '+breached_verdict)
     report_lines.append('Rotation verdict:  '+rotation_verdict)
     report_lines.append('----------------------------------------')
     report_lines.append('OVERALL:           '+overall)

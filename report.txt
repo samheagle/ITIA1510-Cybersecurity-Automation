@@ -12,7 +12,7 @@ Length verdict:    MODERATE — meets minimum but falls short of NIST recommendati
 Digit found:       True
 Username match:    NO
 Password breached:      CRITICAL -- password found in known breach list
-Rotation verdict:  EXCELLENT — frequent rotation policy detected
+Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
 ----------------------------------------
 OVERALL:           OVERALL: FAIL - see findings above
 ========================================
