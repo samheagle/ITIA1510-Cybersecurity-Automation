@@ -177,7 +177,7 @@ def load_history(filepath):
         with open(filepath, "r") as f:
             history = json.load(f)
     else:
-        history = {}
+        history = []
     return history
 
 def add_to_history(history, summary, keep):

@@ -9,12 +9,12 @@ Rotation interval: 12 months
 Rotations (3 yr):  3
 ----------------------------------------
 Length verdict:    MODERATE — meets minimum but falls short of NIST recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
-Password breached:      CRITICAL -- password found in known breach list
+Breach check:      CRITICAL -- password found in known breach list
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
 ----------------------------------------
-OVERALL:           OVERALL: FAIL - see findings above
+OVERALL:           FAIL - password does not meet all checked criteria
 ========================================
 ========================================
    PASSWORD AUDIT REPORT: 2 of 5
@@ -27,12 +27,12 @@ Rotation interval: 24 months
 Rotations (3 yr):  1
 ----------------------------------------
 Length verdict:    WEAK — does not meet minimum length requirements
-Digit found:       False
+Digit found:       NO
 Username match:    CRITICAL - password must not match username
-Password breached:      NO
+Breach check:      NO
 Rotation verdict:  WARNING — rotation interval exceeds recommended maximum of 12 months
 ----------------------------------------
-OVERALL:           OVERALL: FAIL - see findings above
+OVERALL:           FAIL - password does not meet all checked criteria
 ========================================
 ========================================
    PASSWORD AUDIT REPORT: 3 of 5
@@ -45,12 +45,12 @@ Rotation interval: 3 months
 Rotations (3 yr):  12
 ----------------------------------------
 Length verdict:    STRONG — meets NIST SP 800-63B recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
-Password breached:      NO
+Breach check:      NO
 Rotation verdict:  EXCELLENT — frequent rotation policy detected
 ----------------------------------------
-OVERALL:           OVERALL: PASS - password meets all checked criteria
+OVERALL:           PASS - password meets all checked criteria
 ========================================
 ========================================
    PASSWORD AUDIT REPORT: 4 of 5
@@ -63,12 +63,12 @@ Rotation interval: 6 months
 Rotations (3 yr):  6
 ----------------------------------------
 Length verdict:    MODERATE — meets minimum but falls short of NIST recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
-Password breached:      NO
+Breach check:      NO
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
 ----------------------------------------
-OVERALL:           OVERALL: FAIL - see findings above
+OVERALL:           FAIL - password does not meet all checked criteria
 ========================================
 ========================================
    PASSWORD AUDIT REPORT: 5 of 5
@@ -81,12 +81,12 @@ Rotation interval: 6 months
 Rotations (3 yr):  6
 ----------------------------------------
 Length verdict:    STRONG — meets NIST SP 800-63B recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
-Password breached:      NO
+Breach check:      NO
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
 ----------------------------------------
-OVERALL:           OVERALL: PASS - password meets all checked criteria
+OVERALL:           PASS - password meets all checked criteria
 ========================================
 ========================================
    PASSWORD AUDIT SUMMARY
