@@ -67,14 +67,12 @@ def check_digit(password):
     #stays false=fail audit
     has_digit=False
     digit_verdict="NO"
-    #checks each char is digit/letter
+    #checks each char is digit/not digit
     for char in password:
-        #if one found
         if char in '0123456789':
-            #passes audit
             has_digit=True
             digit_verdict="YES"
-    return has_digit, digit_verdict
+    return digit_verdict, has_digit
 ##checks if username and password match and defines variable for pass/fail
 def check_username(password, username):
     """Checks password against username. Returns (not_username=bool, username_match=str)."""
@@ -175,8 +173,9 @@ def load_history(filepath):
     """Loads the history dictionary from a JSON file."""
     if os.path.exists(filepath):
         with open(filepath, "r") as f:
-            history = json.load(f)
+            history=json.load(f)
     else:
+        #make sure returns list so can be appended
         history = []
     return history
 
@@ -188,10 +187,10 @@ def add_to_history(history, summary, keep):
     else:
         run_number=1
     entry={
-        "run": run_number,
-        "passed": summary["passed"],
-        "failed": summary["failed"],
-        "critical_accounts": summary["critical_accounts"]}
+        "run":run_number,
+        "passed":summary["passed"],
+        "failed":summary["failed"],
+        "critical_accounts":summary["critical_accounts"]}
     history=[*history, entry]
     return history[-keep:]
 
@@ -239,6 +238,6 @@ if __name__ == '__main__':
         print(line)
     write_report(report_lines, "report.txt")
     save_summary(summary, "audit_summary.json")
-    history = load_history("audit_history.json")
-    history = add_to_history(history, summary, policy["history_runs"])
+    history=load_history("audit_history.json")
+    history=add_to_history(history, summary, policy["history_runs"])
     save_history(history, "audit_history.json")

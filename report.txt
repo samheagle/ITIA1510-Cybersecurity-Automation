@@ -3,15 +3,15 @@
 ========================================
 Account:           Gmail
 Username:          jsmith
-Password length:   11 characters
-Length score:      110 points
+Password length:   12 characters
+Length score:      120 points
 Rotation interval: 12 months
 Rotations (3 yr):  3
 ----------------------------------------
 Length verdict:    MODERATE — meets minimum but falls short of NIST recommendations
 Digit found:       YES
 Username match:    NO
-Breach check:      CRITICAL -- password found in known breach list
+Breach check:      NO
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
 ----------------------------------------
 OVERALL:           FAIL - password does not meet all checked criteria
@@ -94,8 +94,8 @@ OVERALL:           PASS - password meets all checked criteria
 Total passwords checked: 5
 Total passed:            2
 Total failed:            3
-Total critical warnings: 2
+Total critical warnings: 1
 ----------------------------------------
 Accounts failed:        ['Gmail', 'SSH Server', 'Company Email']
-Accounts critical:      ['Gmail', 'SSH Server']
+Accounts critical:      ['SSH Server']
 ========================================

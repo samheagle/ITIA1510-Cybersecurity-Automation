@@ -2,14 +2,13 @@
   "total": 5,
   "passed": 2,
   "failed": 3,
-  "critical": 2,
+  "critical": 1,
   "failed_accounts": [
     "Gmail",
     "SSH Server",
     "Company Email"
   ],
   "critical_accounts": [
-    "Gmail",
     "SSH Server"
   ]
 }

@@ -1,24 +1,20 @@
-from password_checker import (check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy, save_summary, load_summary)
+from password_checker import (check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, load_history, write_report, policy, save_summary, load_summary)
 
-known_breached = load_breached("breached.txt")
-credentials = load_credentials("credentials.txt")
-checklines = ["First test line", "Second test line"]
+known_breached=load_breached("breached.txt")
+credentials=load_credentials("credentials.txt")
+checklines=["First test line","Second test line"]
 
 check1=True
 check2=False
 check3=True
 
 ##check_digit
-check=check_digit("hello")
-assert check==False
-if check==False:
-    check1=False
+assert check_digit("hello")==("NO", False)
+check1=False
 print("PASS: checkdigit failed password without digit")
 
-check=check_digit("hello5")
-assert check==True
-if check==True:
-    check2=True
+assert check_digit("hello5")==("YES", True)
+check2=True
 print("PASS: checkdigit passed password with digit")
 
 assert check1==False and check2==True
@@ -28,7 +24,6 @@ print("PASS: !! checkdigit functioning")
 check1=False
 check2=False
 check3=True
-
 check=check_length("1234567890123456", policy)
 assert check[0]==True
 if check[0]==True:
@@ -97,7 +92,6 @@ print("PASS: !! checkrotation functioning")
 #check_breach
 check1=True
 check2=False
-
 check=check_breach("password", known_breached)
 assert check[0]==False
 if check[0]==False:
@@ -116,17 +110,12 @@ print("PASS: !! checkbreach functioning")
 #check policy
 check1=False
 check2=False
-
-check=policy["strong_length"]==15
-assert check==True
-if check==True:
-    check1=True
+assert policy["strong_length"]==15
+check1=True
 print("PASS: policy defines strong_length as 15")
 
-check="require_digit" in policy
-assert check==True
-if check==True:
-    check2=True
+assert"require_digit" in policy
+check2=True
 print("PASS: policy mentions digit")
       
 assert check1==True and check2==True
@@ -135,17 +124,12 @@ print("PASS: !! policy okay")
 #load_credentials
 check1=False
 check2=False
-
-check=isinstance(credentials, list)
-assert check==True
-if check==True:
-    check1=True
+assert isinstance(credentials, list)
+check1=True
 print("PASS: credentials returns list")
 
-check="account" in credentials[0]
-assert check==True
-if check==True:
-    check2=True
+assert "account" in credentials[0]
+check2=True
 print("PASS: first credential is account")
 
 assert check1==True and check2==True
@@ -154,17 +138,12 @@ print("PASS: !! loadcredentials functioning")
 #load_breach
 check1=False
 check2=False
-
-check=isinstance(known_breached, list)
-assert check==True
-if check==True:
-    check1=True
+assert isinstance(known_breached, list)
+check1=True
 print("PASS: knownbreached returns list")
 
-check="password123" in known_breached
-assert check==True
-if check==True:
-    check2=True
+assert "password123" in known_breached
+check2=True
 print("PASS: knownbreached contains password123")
 
 assert check1==True and check2==True
@@ -172,45 +151,36 @@ print("PASS: !! loadbreached functioning")
 
 #write_report
 check1=False
-
 write_report(checklines, "test_report.txt")
 with open("test_report.txt", "r") as f:
     report_text=f.read()
-check=report_text=="First test line\nSecond test line\n"
-assert check==True
-if check==True:
-    check1=True
+assert report_text=="First test line\nSecond test line\n"
+check1=True
 print("PASS: write_report saves the correct text")
 
 assert check1==True
 print("PASS: !! write_report functioning")
 
-#save&loadsummary
+#summary
 check1=False
 check2=False
-
+check3=False
 checklines={"total": 7, "passed": 5, "failed": 2, "critical": 1, "failed_accounts": ["account1", "account2"], "critical_accounts": ["account3"]}
 save_summary(checklines, "test_summary.json")
 checklines2=load_summary("test_summary.json")
-assert checklines2==checklines
-if checklines2==checklines:
-    check1=True
+assert checklines==checklines2
+check1=True
 print("PASS: savesummary and loadsummary match inoutput")
 
-check=isinstance(checklines2["failed_accounts"], list)
-assert check==True
-if check==True:
-    check2=True
+assert isinstance(checklines["failed_accounts"], list)
+check2=True
 print("PASS: failedaccounts list")
-
-check3=False
 
 with open("test_summary.json", "r") as f:
     checklines2=f.read()
 for cred in credentials:
     if cred["password"] in checklines2:
         check3=True
-
 assert check3==False
 print("PASS: summary does not contain passwords")
 

@@ -1,14 +1,5 @@
 [
   {
-    "run": 5,
-    "passed": 2,
-    "failed": 3,
-    "critical_accounts": [
-      "Gmail",
-      "SSH Server"
-    ]
-  },
-  {
     "run": 6,
     "passed": 2,
     "failed": 3,
@@ -23,6 +14,14 @@
     "failed": 3,
     "critical_accounts": [
       "Gmail",
+      "SSH Server"
+    ]
+  },
+  {
+    "run": 8,
+    "passed": 2,
+    "failed": 3,
+    "critical_accounts": [
       "SSH Server"
     ]
   }
