@@ -1,8 +1,9 @@
-from password_checker import (check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, load_history, write_report, policy, save_summary, load_summary)
+from password_checker import check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy, save_summary, load_summary, add_to_history, load_history, save_history
 
 known_breached=load_breached("breached.txt")
 credentials=load_credentials("credentials.txt")
 checklines=["First test line","Second test line"]
+checksample={"total": 7, "passed": 5, "failed": 2, "critical": 1, "failed_accounts": ["account1", "account2"], "critical_accounts": ["account3"]}
 
 check1=True
 check2=False
@@ -90,12 +91,12 @@ assert check1==True and check2==True and check3==False
 print("PASS: !! checkrotation functioning")
 
 #check_breach
-check1=True
+check1=False
 check2=False
 check=check_breach("password", known_breached)
 assert check[0]==False
 if check[0]==False:
-    check1=False
+    check1=True
 print("PASS: checkbreach failed breached")
 
 check=check_breach("notbreached", known_breached)
@@ -104,7 +105,7 @@ if check[0]==True:
     check2=True
 print("PASS: checkbreach passed not breached")
 
-assert check1==False and check2==True
+assert check1==True and check2==True
 print("PASS: !! checkbreach functioning")
 
 #check policy
@@ -165,10 +166,9 @@ print("PASS: !! write_report functioning")
 check1=False
 check2=False
 check3=False
-checklines={"total": 7, "passed": 5, "failed": 2, "critical": 1, "failed_accounts": ["account1", "account2"], "critical_accounts": ["account3"]}
-save_summary(checklines, "test_summary.json")
-checklines2=load_summary("test_summary.json")
-assert checklines==checklines2
+save_summary(checksample, "test_summary.json")
+checklines=load_summary("test_summary.json")
+assert checklines==checksample
 check1=True
 print("PASS: savesummary and loadsummary match inoutput")
 
@@ -177,12 +177,43 @@ check2=True
 print("PASS: failedaccounts list")
 
 with open("test_summary.json", "r") as f:
-    checklines2=f.read()
+    checklines=f.read()
 for cred in credentials:
-    if cred["password"] in checklines2:
+    if cred["password"] in checklines:
         check3=True
 assert check3==False
 print("PASS: summary does not contain passwords")
 
 assert check1==True and check2==True and check3==False
 print("PASS: !! savesummary and loadsummary functioning")
+
+#history check
+check1=False
+check2=False
+check3=False
+check4=False
+assert load_history("missing_history_test.json")==[]
+check1=True
+print("PASS: missing history returns empty list")
+
+history=[]
+history=add_to_history(history, checksample, 3)
+assert len(history)==1
+assert history[0]["run"]==1
+check2=True
+print("PASS: empty history returns single entry list numbered 1")
+
+history=[]
+for i in range(3):
+    history=add_to_history(history, checksample, 2)
+assert [entry["run"] for entry in history] == [2, 3]
+check3=True
+print("PASS: add_to_history kept only the newest 2 runs")
+
+save_history(history, "test_history.json")
+assert load_history("test_history.json")==history
+check4=True
+print("PASS: history saved and loaded are the same")
+
+if check1==True and check2==True and check3==True and check4==True:
+    print("PASS: !! history functioning")
