@@ -199,6 +199,23 @@ def save_history(history, filepath):
     with open(filepath, "w") as file:
         json.dump(history, file, indent=2)
 
+def breach_verdicts(username, credentials, known_breached):
+    """Returns a list of breach verdicts for each credential."""
+    #list
+    accounts=[]
+    for cred in credentials:
+        if cred["username"]==username:
+            breached_verdict=check_breach(cred["password"], known_breached)
+            #verdicts returns a str tuple- make sure to include both vals in checks
+            if breached_verdict==(False, "CRITICAL -- password found in known breach list"):
+                on_breach_list=True
+            else:
+                on_breach_list=False
+            #add dictionary to list
+            accounts.append({"account": cred["account"], "on_breach_list": on_breach_list})
+    #return username and list of accounts with breach status so it compiles not overrides
+    return {"username": username, "accounts": accounts}
+
 ##runs the evaluation!
 #will only print audit summary if run from the main branch
 if __name__ == '__main__':
@@ -241,3 +258,7 @@ if __name__ == '__main__':
     history=load_history("audit_history.json")
     history=add_to_history(history, summary, policy["history_runs"])
     save_history(history, "audit_history.json")
+    # Save breach verdicts for jsmith.
+    jsmithbreach=breach_verdicts("jsmith", credentials, known_breached)
+    with open("breach_check.json", "w") as f:
+        json.dump(jsmithbreach, f, indent=2)

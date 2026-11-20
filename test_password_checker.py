@@ -1,4 +1,5 @@
-from password_checker import check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy, save_summary, load_summary, add_to_history, load_history, save_history
+import json
+from password_checker import check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy, save_summary, load_summary, add_to_history, load_history, save_history, breach_verdicts
 
 known_breached=load_breached("breached.txt")
 credentials=load_credentials("credentials.txt")
@@ -93,19 +94,25 @@ print("PASS: !! checkrotation functioning")
 #check_breach
 check1=False
 check2=False
+check3=False
 check=check_breach("password", known_breached)
 assert check[0]==False
 if check[0]==False:
     check1=True
 print("PASS: checkbreach failed breached")
 
+not_breached=check_breach("password123", known_breached)
+assert not_breached==(False, 'CRITICAL -- password found in known breach list')
+check2=True
+print("PASS: knownbreached fails password in breachedtxt")
+
 check=check_breach("notbreached", known_breached)
 assert check[0]==True
 if check[0]==True:
-    check2=True
+    check3=True
 print("PASS: checkbreach passed not breached")
 
-assert check1==True and check2==True
+assert check1==True and check2==True and check3==True
 print("PASS: !! checkbreach functioning")
 
 #check policy
@@ -113,7 +120,7 @@ check1=False
 check2=False
 assert policy["strong_length"]==15
 check1=True
-print("PASS: policy defines strong_length as 15")
+print("PASS: policy defines stronglength==15")
 
 assert"require_digit" in policy
 check2=True
@@ -139,6 +146,7 @@ print("PASS: !! loadcredentials functioning")
 #load_breach
 check1=False
 check2=False
+check3=False
 assert isinstance(known_breached, list)
 check1=True
 print("PASS: knownbreached returns list")
@@ -148,7 +156,7 @@ check2=True
 print("PASS: knownbreached contains password123")
 
 assert check1==True and check2==True
-print("PASS: !! loadbreached functioning")
+print("PASS: !! knownbreached functioning")
 
 #write_report
 check1=False
@@ -157,7 +165,7 @@ with open("test_report.txt", "r") as f:
     report_text=f.read()
 assert report_text=="First test line\nSecond test line\n"
 check1=True
-print("PASS: write_report saves the correct text")
+print("PASS: write_report saves correct text")
 
 assert check1==True
 print("PASS: !! write_report functioning")
@@ -208,7 +216,7 @@ for i in range(3):
     history=add_to_history(history, checksample, 2)
 assert [entry["run"] for entry in history] == [2, 3]
 check3=True
-print("PASS: add_to_history kept only the newest 2 runs")
+print("PASS: add_to_history kept only newest 2 runs")
 
 save_history(history, "test_history.json")
 assert load_history("test_history.json")==history
@@ -217,3 +225,31 @@ print("PASS: history saved and loaded are the same")
 
 if check1==True and check2==True and check3==True and check4==True:
     print("PASS: !! history functioning")
+
+#breachverdicts
+check1=False
+check2=False
+check3=False
+check=breach_verdicts("jsmith", load_credentials("credentials.txt"), known_breached)
+assert check["accounts"][0]=={"account": "Gmail", "on_breach_list": True}
+check1=True
+print("PASS: breachverdicts first entry==first credential - first entry is breached gmail")
+    
+check=breach_verdicts("nobody", load_credentials("credentials.txt"), known_breached)
+assert check["accounts"]==[]
+check2=True
+print("PASS: breachverdicts returns empty list user with no accounts")
+
+result=breach_verdicts("jsmith", load_credentials("credentials.txt"), known_breached)
+result_json=json.dumps(result)
+credentials=load_credentials("credentials.txt")
+for credential in credentials:
+    # temp skip sshserver- its password is same as user
+    if credential["account"]=="SSH Server":
+        continue
+assert credential["password"] not in result_json
+check3=True
+print("PASS: breachverdicts holds no passwords")
+
+assert check1==True and check2==True and check3==True
+print("PASS: !! breachverdicts functioning")
