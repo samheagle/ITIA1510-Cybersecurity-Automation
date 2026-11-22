@@ -1,4 +1,6 @@
+from datetime import datetime, timezone
 import json, os
+
 #policy has to be global so that check_length and check_rotation can access it
 #a policy is easier to read and edit besides a bunch of hardcoded values spread out through funcs
 policy = {
@@ -10,6 +12,8 @@ policy = {
     "check_breach_list": True,
     "history_runs":3,
 }
+CHECK_NAMES=["check_breach", "check_length", "check_rotation"]
+AUDIT_LOG="audit_log.json1"
 
 def load_breached(filepath):
     """Read the breached password file. Returns a list of password strings."""
@@ -27,16 +31,12 @@ def load_credentials(filepath):
     credentials=[]
     with open(filepath, "r") as f:
         for line in f:
-            line = line.strip()
+            line=line.strip()
             #skip blank lines
-            if line == "":
+            if line== "":
                 continue
-            fields = line.split(",")
-            credentials.append({
-                "account": fields[0],
-                "username": fields[1],
-                "password": fields[2],
-                "rotation_interval": int(fields[3]),
+            fields=line.split(",")
+            credentials.append({"account": fields[0], "username": fields[1], "password": fields[2], "rotation_interval": int(fields[3])
             })
     return credentials
 def write_report(report_lines, filepath):
@@ -44,7 +44,6 @@ def write_report(report_lines, filepath):
     with open(filepath, "w") as f:
         for line in report_lines:
             f.write(line + "\n")
-##checks if password meets minimum pass/fail length requirements and def audit final output str
 def check_length(password, policy):
     """Checks password length against NIST SP 800-63B thresholds. Takes a password string. Returns (length_ok: bool, length_verdict: str)."""
     password_length = int(len(password))
@@ -61,7 +60,6 @@ def check_length(password, policy):
         length_verdict = "STRONG — meets NIST SP 800-63B recommendations"
         length_ok=True
     return length_ok, length_verdict
-##checks if password contains a digit and defines variable for pass/fail
 def check_digit(password):
     """Check every character in input password against digits. Returns (has_digit: bool)."""
     #stays false=fail audit
@@ -73,7 +71,6 @@ def check_digit(password):
             has_digit=True
             digit_verdict="YES"
     return digit_verdict, has_digit
-##checks if username and password match and defines variable for pass/fail
 def check_username(password, username):
     """Checks password against username. Returns (not_username=bool, username_match=str)."""
     not_username = password != username
@@ -112,8 +109,8 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     """Checks if input password is >=15ch, has a digit, doesnt match username, and is rotated >=yearly. Returns (return passed:int, failed:int, critical:int)."""
     ##calls above functions to evaluate the password
     length_ok, length_verdict = check_length(password, policy)
-    has_digit, digit_verdict = check_digit(password)
-    not_username, username_match= check_username(password, username)
+    has_digit, digit_verdict=check_digit(password)
+    not_username, username_match = check_username(password, username)
     rotation_ok, rotation_verdict = check_rotation(rotation_interval, policy)
     not_breached, breached_verdict = check_breach(password, known_breached)
     password_length = int(len(password))
@@ -152,7 +149,7 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     report_lines.append('Rotations (3 yr):  '+rotation_count)
     report_lines.append('----------------------------------------')
     report_lines.append('Length verdict:    '+length_verdict)
-    report_lines.append('Digit found:       '+str(digit_verdict))
+    report_lines.append('Digit found:       '+has_digit)
     report_lines.append('Username match:    '+username_match)
     report_lines.append('Breach check:      '+breached_verdict)
     report_lines.append('Rotation verdict:  '+rotation_verdict)
@@ -178,7 +175,6 @@ def load_history(filepath):
         #make sure returns list so can be appended
         history = []
     return history
-
 def add_to_history(history, summary, keep):
     """keeps a count of how many passwords ran passed failed"""
     if history:
@@ -193,12 +189,10 @@ def add_to_history(history, summary, keep):
         "critical_accounts":summary["critical_accounts"]}
     history=[*history, entry]
     return history[-keep:]
-
 def save_history(history, filepath):
     """saves history to JSON file."""
     with open(filepath, "w") as file:
         json.dump(history, file, indent=2)
-
 def breach_verdicts(username, credentials, known_breached):
     """Returns a list of breach verdicts for each credential."""
     #list
@@ -215,29 +209,71 @@ def breach_verdicts(username, credentials, known_breached):
             accounts.append({"account": cred["account"], "on_breach_list": on_breach_list})
     #return username and list of accounts with breach status so it compiles not overrides
     return {"username": username, "accounts": accounts}
+def length_verdicts(username, credentials, known_breached):
+    """Returns a list of length verdicts for each credential."""
+    #list
+    accounts=[]
+    for cred in credentials:
+        if cred["username"]==username:
+            password=cred["password"]
+            long_enough=check_length(password, policy)
+            accounts.append({"account": cred["account"], "long_enough": long_enough[0]})
+    #return username and list of accounts with breach status so it compiles not overrides
+    return {"username": username, "accounts": accounts}
+def rotation_verdicts(username, credentials, known_breached):
+    """Returns a list of rotation verdicts for each credential."""
+    #list
+    accounts=[]
+    for cred in credentials:
+        if cred["username"]==username:
+            rotation_months=cred["rotation_interval"]
+            rotation_ok=check_rotation(rotation_months, policy)
+            accounts.append({"account": cred["account"], "rotation_ok": rotation_ok[0]})
+    return {"username": username, "accounts": accounts}
+def run_check(name, username, credentials, known_breached):
+    """Runs a specific check for a given username and returns the results."""
+    if name=="check_breach":
+        result=breach_verdicts(username, credentials, known_breached)
+        return result
+    elif name=="check_length":
+        result=length_verdicts(username, credentials, known_breached)
+        return result
+    elif name=="check_rotation":
+        result=rotation_verdicts(username, credentials, known_breached)
+        return result
+    else:
+        result={"error": "unknown check"}
+        return result
+
+def log_check(name, username, result, log_path):
+    """Add audit log entry to log_path. Returns the log entry as a dictionary."""
+    result={"time": datetime.now(timezone.utc).isoformat(), "check": name, "username": username}
+    with open(log_path, "a") as f:
+        f.write(json.dumps(result)+"\n")
+    return result
 
 ##runs the evaluation!
 #will only print audit summary if run from the main branch
 if __name__ == '__main__':
     credentials = load_credentials("credentials.txt")
     known_breached = load_breached("breached.txt")
-    report_lines = []
-    failed_accounts = []
-    critical_accounts = []
-    summary = {"total": 0, "passed": 0, "failed": 0, "critical": 0,
-           "failed_accounts": [], "critical_accounts": []}
+    report_lines=[]
+    failed_accounts=[]
+    critical_accounts=[]
+    summary={"total": 0, "passed": 0, "failed": 0, "critical": 0,
+           "failed_accounts": [], "critical_accounts":[]}
 
     for cred in credentials:
         passed, failed, critical=audit_password(cred["account"], cred["username"], cred["password"], cred["rotation_interval"], known_breached, policy, report_lines)
         if passed:
-            summary["passed"] += 1
+            summary["passed"]+=1
         if failed:
-            summary["failed_accounts"].append(cred["account"])
-            summary["failed"] += 1
+            summary["failed_accounts"].append(cred["account"]+", ")
+            summary["failed"]+=1
         if critical:
-            summary["critical_accounts"].append(cred["account"])
-            summary["critical"] += 1
-        summary["total"] += 1
+            summary["critical_accounts"].append(cred["account"]+", ")
+            summary["critical"]+=1
+        summary["total"]+=1
 
     report_lines.append('========================================')
     report_lines.append('   PASSWORD AUDIT SUMMARY')
@@ -247,8 +283,8 @@ if __name__ == '__main__':
     report_lines.append('Total failed:            '+str(summary["failed"]))
     report_lines.append('Total critical warnings: '+str(summary["critical"]))
     report_lines.append('----------------------------------------')
-    report_lines.append('Accounts failed:        '+str(summary["failed_accounts"]))
-    report_lines.append('Accounts critical:      '+str(summary.get("critical_accounts", 0)))
+    report_lines.append('Accounts failed:        '+str(" ".join(summary["failed_accounts"])))
+    report_lines.append('Accounts critical:      '+str(" ".join(summary["failed_accounts"])))
     report_lines.append('========================================')
 
     for line in report_lines:
@@ -258,7 +294,11 @@ if __name__ == '__main__':
     history=load_history("audit_history.json")
     history=add_to_history(history, summary, policy["history_runs"])
     save_history(history, "audit_history.json")
-    # Save breach verdicts for jsmith.
     jsmithbreach=breach_verdicts("jsmith", credentials, known_breached)
     with open("breach_check.json", "w") as f:
         json.dump(jsmithbreach, f, indent=2)
+    all_checks={}
+    for check_name in CHECK_NAMES:
+        all_checks[check_name]=run_check(check_name, "jsmith", credentials, known_breached)
+    with open("all_checks.json", "w") as f:
+        json.dump(all_checks, f, indent=2)

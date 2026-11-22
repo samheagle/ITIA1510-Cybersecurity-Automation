@@ -9,7 +9,7 @@ Rotation interval: 12 months
 Rotations (3 yr):  3
 ----------------------------------------
 Length verdict:    MODERATE — meets minimum but falls short of NIST recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
 Breach check:      CRITICAL -- password found in known breach list
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
@@ -27,7 +27,7 @@ Rotation interval: 24 months
 Rotations (3 yr):  1
 ----------------------------------------
 Length verdict:    WEAK — does not meet minimum length requirements
-Digit found:       False
+Digit found:       NO
 Username match:    CRITICAL - password must not match username
 Breach check:      NO
 Rotation verdict:  WARNING — rotation interval exceeds recommended maximum of 12 months
@@ -45,7 +45,7 @@ Rotation interval: 3 months
 Rotations (3 yr):  12
 ----------------------------------------
 Length verdict:    STRONG — meets NIST SP 800-63B recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
 Breach check:      NO
 Rotation verdict:  EXCELLENT — frequent rotation policy detected
@@ -63,7 +63,7 @@ Rotation interval: 6 months
 Rotations (3 yr):  6
 ----------------------------------------
 Length verdict:    MODERATE — meets minimum but falls short of NIST recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
 Breach check:      NO
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
@@ -81,7 +81,7 @@ Rotation interval: 6 months
 Rotations (3 yr):  6
 ----------------------------------------
 Length verdict:    STRONG — meets NIST SP 800-63B recommendations
-Digit found:       True
+Digit found:       YES
 Username match:    NO
 Breach check:      NO
 Rotation verdict:  ACCEPTABLE — rotation interval within recommended range
@@ -96,6 +96,6 @@ Total passed:            2
 Total failed:            3
 Total critical warnings: 2
 ----------------------------------------
-Accounts failed:        ['Gmail', 'SSH Server', 'Company Email']
-Accounts critical:      ['Gmail', 'SSH Server']
+Accounts failed:        Gmail,  SSH Server,  Company Email, 
+Accounts critical:      Gmail,  SSH Server,  Company Email, 
 ========================================
