@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
 import json, os
 
+
 #policy has to be global so that check_length and check_rotation can access it
-#a policy is easier to read and edit besides a bunch of hardcoded values spread out through funcs
+#a policy is easier to read edit opposed 2 bunch of hardcoded values spread out through funcs
+#formatted long for readability
 policy = {
     "min_length": 8,
     "strong_length": 15,
@@ -79,7 +81,6 @@ def check_username(password, username):
     else:
         username_match = "NO"
     return not_username, username_match
-##checks if rotation interval meets pass/fail requirements and def audit final output str
 def check_rotation(rotation_interval, policy):
     """Ensures password is rotated at least every year. Returns (rotation_ok:bool, rotation_verdict:str)."""
     if int(rotation_interval) >policy["max_rotation_months"]:
@@ -96,7 +97,6 @@ def check_rotation(rotation_interval, policy):
         rotation_verdict = 'EXCELLENT — frequent rotation policy detected'
         rotation_ok=True
     return rotation_ok, rotation_verdict
-##checks if password is in known breached list
 def check_breach(password, known_breached):
     """Checks if password is in known breached list. Returns (breached:bool, breached_verdict:str)."""
     not_breached = password not in known_breached
@@ -104,7 +104,6 @@ def check_breach(password, known_breached):
     if not_breached == False:
         breached_verdict = "CRITICAL -- password found in known breach list"
     return not_breached, breached_verdict
-##final pass/fail audit
 def audit_password(account, username, password, rotation_interval, not_breached, policy, report_lines):
     """Checks if input password is >=15ch, has a digit, doesnt match username, and is rotated >=yearly. Returns (return passed:int, failed:int, critical:int)."""
     ##calls above functions to evaluate the password
@@ -209,48 +208,6 @@ def breach_verdicts(username, credentials, known_breached):
             accounts.append({"account": cred["account"], "on_breach_list": on_breach_list})
     #return username and list of accounts with breach status so it compiles not overrides
     return {"username": username, "accounts": accounts}
-def length_verdicts(username, credentials, known_breached):
-    """Returns a list of length verdicts for each credential."""
-    #list
-    accounts=[]
-    for cred in credentials:
-        if cred["username"]==username:
-            password=cred["password"]
-            long_enough=check_length(password, policy)
-            accounts.append({"account": cred["account"], "long_enough": long_enough[0]})
-    #return username and list of accounts with breach status so it compiles not overrides
-    return {"username": username, "accounts": accounts}
-def rotation_verdicts(username, credentials, known_breached):
-    """Returns a list of rotation verdicts for each credential."""
-    #list
-    accounts=[]
-    for cred in credentials:
-        if cred["username"]==username:
-            rotation_months=cred["rotation_interval"]
-            rotation_ok=check_rotation(rotation_months, policy)
-            accounts.append({"account": cred["account"], "rotation_ok": rotation_ok[0]})
-    return {"username": username, "accounts": accounts}
-def run_check(name, username, credentials, known_breached):
-    """Runs a specific check for a given username and returns the results."""
-    if name=="check_breach":
-        result=breach_verdicts(username, credentials, known_breached)
-        return result
-    elif name=="check_length":
-        result=length_verdicts(username, credentials, known_breached)
-        return result
-    elif name=="check_rotation":
-        result=rotation_verdicts(username, credentials, known_breached)
-        return result
-    else:
-        result={"error": "unknown check"}
-        return result
-
-def log_check(name, username, result, log_path):
-    """Add audit log entry to log_path. Returns the log entry as a dictionary."""
-    result={"time": datetime.now(timezone.utc).isoformat(), "check": name, "username": username}
-    with open(log_path, "a") as f:
-        f.write(json.dumps(result)+"\n")
-    return result
 
 ##runs the evaluation!
 #will only print audit summary if run from the main branch
@@ -297,8 +254,3 @@ if __name__ == '__main__':
     jsmithbreach=breach_verdicts("jsmith", credentials, known_breached)
     with open("breach_check.json", "w") as f:
         json.dump(jsmithbreach, f, indent=2)
-    all_checks={}
-    for check_name in CHECK_NAMES:
-        all_checks[check_name]=run_check(check_name, "jsmith", credentials, known_breached)
-    with open("all_checks.json", "w") as f:
-        json.dump(all_checks, f, indent=2)

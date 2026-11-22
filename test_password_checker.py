@@ -1,16 +1,15 @@
 import json
-from password_checker import check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy, save_summary, load_summary, add_to_history, load_history, save_history, breach_verdicts
+from password_checker import check_length, check_digit, check_username, check_rotation, check_breach, load_credentials, load_breached, write_report, policy, save_summary, load_summary, add_to_history, load_history, save_history, breach_verdicts, length_verdicts, rotation_verdicts, run_check
 
 known_breached=load_breached("breached.txt")
 credentials=load_credentials("credentials.txt")
-checklines=["First test line","Second test line"]
 checksample={"total": 7, "passed": 5, "failed": 2, "critical": 1, "failed_accounts": ["account1", "account2"], "critical_accounts": ["account3"]}
 
+#check_digit
 check1=True
 check2=False
 check3=True
 
-##check_digit
 assert check_digit("hello")==("NO", False)
 check1=False
 print("PASS: checkdigit failed password without digit")
@@ -26,6 +25,7 @@ print("PASS: !! checkdigit functioning")
 check1=False
 check2=False
 check3=True
+
 check=check_length("1234567890123456", policy)
 assert check[0]==True
 if check[0]==True:
@@ -50,6 +50,7 @@ print("PASS: !!checklength functioning")
 #check_username
 check1=True
 check2=False
+
 check=check_username('123','123')
 assert check[0]==False
 if check[0]==False:
@@ -95,6 +96,7 @@ print("PASS: !! checkrotation functioning")
 check1=False
 check2=False
 check3=False
+
 check=check_breach("password", known_breached)
 assert check[0]==False
 if check[0]==False:
@@ -118,6 +120,7 @@ print("PASS: !! checkbreach functioning")
 #check policy
 check1=False
 check2=False
+
 assert policy["strong_length"]==15
 check1=True
 print("PASS: policy defines stronglength==15")
@@ -132,6 +135,7 @@ print("PASS: !! policy okay")
 #load_credentials
 check1=False
 check2=False
+
 assert isinstance(credentials, list)
 check1=True
 print("PASS: credentials returns list")
@@ -147,6 +151,7 @@ print("PASS: !! loadcredentials functioning")
 check1=False
 check2=False
 check3=False
+
 assert isinstance(known_breached, list)
 check1=True
 print("PASS: knownbreached returns list")
@@ -160,7 +165,9 @@ print("PASS: !! knownbreached functioning")
 
 #write_report
 check1=False
-write_report(checklines, "test_report.txt")
+
+check=["First test line","Second test line"]
+write_report(check, "test_report.txt")
 with open("test_report.txt", "r") as f:
     report_text=f.read()
 assert report_text=="First test line\nSecond test line\n"
@@ -170,36 +177,38 @@ print("PASS: write_report saves correct text")
 assert check1==True
 print("PASS: !! write_report functioning")
 
-#summary
+#saveload_summary
 check1=False
 check2=False
 check3=False
+
 save_summary(checksample, "test_summary.json")
-checklines=load_summary("test_summary.json")
-assert checklines==checksample
+check=load_summary("test_summary.json")
+assert check==checksample
 check1=True
 print("PASS: savesummary and loadsummary match inoutput")
 
-assert isinstance(checklines["failed_accounts"], list)
+assert isinstance(check["failed_accounts"], list)
 check2=True
 print("PASS: failedaccounts list")
 
 with open("test_summary.json", "r") as f:
-    checklines=f.read()
+    check=f.read()
 for cred in credentials:
-    if cred["password"] in checklines:
+    if cred["password"] in check:
         check3=True
 assert check3==False
 print("PASS: summary does not contain passwords")
 
 assert check1==True and check2==True and check3==False
-print("PASS: !! savesummary and loadsummary functioning")
+print("PASS: !! saveloadsummary functioning")
 
-#history check
+#addsaveload_history
 check1=False
 check2=False
 check3=False
 check4=False
+
 assert load_history("missing_history_test.json")==[]
 check1=True
 print("PASS: missing history returns empty list")
@@ -224,12 +233,13 @@ check4=True
 print("PASS: history saved and loaded are the same")
 
 if check1==True and check2==True and check3==True and check4==True:
-    print("PASS: !! history functioning")
+    print("PASS: !! addsaveloadhistory functioning")
 
-#breachverdicts
+#breach_verdicts
 check1=False
 check2=False
 check3=False
+
 check=breach_verdicts("jsmith", load_credentials("credentials.txt"), known_breached)
 assert check["accounts"][0]=={"account": "Gmail", "on_breach_list": True}
 check1=True
@@ -253,3 +263,32 @@ print("PASS: breachverdicts holds no passwords")
 
 assert check1==True and check2==True and check3==True
 print("PASS: !! breachverdicts functioning")
+
+#lengthrotation_verdicts
+check1=False
+check2=False
+check3=False
+check4=False
+
+check=length_verdicts("jsmith", load_credentials("credentials.txt"), known_breached)
+assert check["accounts"][2]=={"account": "VPN", "long_enough": True}  
+check1=True
+print("PASS: lengthverdicts third entry==third credential")
+
+check=rotation_verdicts("jsmith", load_credentials("credentials.txt"), known_breached)
+assert check["accounts"][1]=={"account": "SSH Server", "rotation_ok": False}
+check2=True 
+print("PASS: rotationverdicts second entry==second credential")
+
+check=breach_verdicts("jsmith", load_credentials("credentials.txt"), known_breached)
+assert check==run_check("check_breach", "jsmith", load_credentials("credentials.txt"), known_breached)
+check3=True
+print("PASS: breachverdicts and runcheck match")
+
+check=run_check("reset_password", "jsmith", load_credentials("credentials.txt"), known_breached)
+assert check=={"error": "unknown check"}
+check4=True
+print("PASS: run_check refused unknown check")
+
+assert check1==True and check2==True and check3==True and check4==True
+print("PASS: !! lengthrotationverdicts, runcheck functioning")
