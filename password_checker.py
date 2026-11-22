@@ -1,4 +1,6 @@
+from datetime import datetime, timezone
 import json, os
+
 
 #policy has to be global so that check_length and check_rotation can access it
 #a policy is easier to read edit opposed 2 bunch of hardcoded values spread out through funcs
@@ -12,6 +14,9 @@ policy = {
     "check_breach_list": True,
     "history_runs":3,
 }
+
+CHECK_NAMES=["check_breach", "check_length", "check_rotation"]
+AUDIT_LOG="audit_log.json1"
 
 def load_breached(filepath):
     """Read the breached password file. Returns a list of password strings."""
@@ -29,16 +34,12 @@ def load_credentials(filepath):
     credentials=[]
     with open(filepath, "r") as f:
         for line in f:
-            line = line.strip()
+            line=line.strip()
             #skip blank lines
-            if line == "":
+            if line== "":
                 continue
-            fields = line.split(",")
-            credentials.append({
-                "account": fields[0],
-                "username": fields[1],
-                "password": fields[2],
-                "rotation_interval": int(fields[3]),
+            fields=line.split(",")
+            credentials.append({"account": fields[0], "username": fields[1], "password": fields[2], "rotation_interval": int(fields[3])
             })
     return credentials
 def write_report(report_lines, filepath):
@@ -108,8 +109,8 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     """Checks if input password is >=15ch, has a digit, doesnt match username, and is rotated >=yearly. Returns (return passed:int, failed:int, critical:int)."""
     ##calls above functions to evaluate the password
     length_ok, length_verdict = check_length(password, policy)
-    has_digit, digit_verdict = check_digit(password)
-    not_username, username_match= check_username(password, username)
+    has_digit, digit_verdict=check_digit(password)
+    not_username, username_match = check_username(password, username)
     rotation_ok, rotation_verdict = check_rotation(rotation_interval, policy)
     not_breached, breached_verdict = check_breach(password, known_breached)
     password_length = int(len(password))
@@ -148,7 +149,7 @@ def audit_password(account, username, password, rotation_interval, not_breached,
     report_lines.append('Rotations (3 yr):  '+rotation_count)
     report_lines.append('----------------------------------------')
     report_lines.append('Length verdict:    '+length_verdict)
-    report_lines.append('Digit found:       '+str(digit_verdict))
+    report_lines.append('Digit found:       '+has_digit)
     report_lines.append('Username match:    '+username_match)
     report_lines.append('Breach check:      '+breached_verdict)
     report_lines.append('Rotation verdict:  '+rotation_verdict)
@@ -229,21 +230,39 @@ def rotation_verdicts(username, credentials, known_breached):
             rotation_ok=check_rotation(rotation_months, policy)
             accounts.append({"account": cred["account"], "rotation_ok": rotation_ok[0]})
     return {"username": username, "accounts": accounts}
-CHECK_NAMES=["check_breach", "check_length", "check_rotation"]
 def run_check(name, username, credentials, known_breached):
     """Runs a specific check for a given username and returns the results."""
+    #log is written here instead of in the indv funcs so there can be an error message for unrecognized checks 
     if name=="check_breach":
         result=breach_verdicts(username, credentials, known_breached)
-        return result
     elif name=="check_length":
         result=length_verdicts(username, credentials, known_breached)
-        return result
     elif name=="check_rotation":
         result=rotation_verdicts(username, credentials, known_breached)
-        return result
     else:
         result={"error": "unknown check"}
-        return result
+    log_check(name, username, result, AUDIT_LOG)
+    return result
+def log_check(name, username, result, log_path):
+    """ Logs the result of a check to the audit log file."""
+    #using utc timezone to avoid confusion with local timezones
+    result={"time": datetime.now(timezone.utc).isoformat(), "check": name, "username": username, "result": result}
+    with open(log_path, "a") as f:
+        f.write(json.dumps(result) + "\n")
+    return result
+def read_audit_log(log_path):
+    """Add read_audit_log(log_path). It reads the file one line at a time, skips blank lines, turns each other line back into a dictionary with json.loads(), and returns the list of entries, oldest first."""
+    entries=[]
+    if not os.path.exists(log_path):
+        return entries
+    with open(log_path, "r") as f:
+        for line in f:
+            line=line.strip()
+            if line==" ":
+                continue
+            #add the next entry to the end of entries
+            entries.append(json.loads(line))
+    return entries
 if __name__=='__main__':
     ##runs the evaluation!
     #here so audit summary only prints if run from main- for testing
@@ -293,4 +312,5 @@ if __name__=='__main__':
     for check_name in CHECK_NAMES:
         all_checks[check_name]=run_check(check_name, "jsmith", credentials, known_breached)
     with open("all_checks.json", "w") as f:
-            json.dump(all_checks, f, indent=2)
+        json.dump(all_checks, f, indent=2)
+    print(len(read_audit_log(AUDIT_LOG)))

@@ -1,0 +1,5 @@
+{"time": "2026-11-22T06:29:31.535292+00:00", "check": "check_breach", "username": "jsmith", "result": {"username": "jsmith", "accounts": [{"account": "Gmail", "on_breach_list": true}, {"account": "SSH Server", "on_breach_list": false}, {"account": "VPN", "on_breach_list": false}, {"account": "Company Email", "on_breach_list": false}, {"account": "GitHub", "on_breach_list": false}]}}
+{"time": "2026-11-22T06:29:31.535934+00:00", "check": "reset_password", "username": "jsmith", "result": {"error": "unknown check"}}
+{"time": "2026-11-22T06:29:31.536406+00:00", "check": "check_length", "username": "jsmith", "result": {"example": true}}
+{"time": "2026-11-22T06:29:31.557822+00:00", "check": "check_length", "username": "jsmith", "result": {"username": "jsmith", "accounts": [{"account": "Gmail", "long_enough": false}, {"account": "SSH Server", "long_enough": false}, {"account": "VPN", "long_enough": true}, {"account": "Company Email", "long_enough": false}, {"account": "GitHub", "long_enough": true}]}}
+{"time": "2026-11-22T06:29:31.558368+00:00", "check": "reset_password", "username": "jsmith", "result": {"error": "unknown check"}}
