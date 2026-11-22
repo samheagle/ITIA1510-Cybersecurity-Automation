@@ -96,6 +96,6 @@ Total passed:            2
 Total failed:            3
 Total critical warnings: 2
 ----------------------------------------
-Accounts failed:        Gmail,  SSH Server,  Company Email, 
-Accounts critical:      Gmail,  SSH Server,  Company Email, 
+Accounts failed:        ['Gmail', 'SSH Server', 'Company Email']
+Accounts critical:      ['Gmail', 'SSH Server']
 ========================================
