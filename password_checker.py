@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 import json, os
 
-
 #policy has to be global so that check_length and check_rotation can access it
 #a policy is easier to read edit opposed 2 bunch of hardcoded values spread out through funcs
 #formatted long for readability
@@ -70,7 +69,7 @@ def check_digit(password):
     digit_verdict="NO"
     #checks each char is digit/not digit
     for char in password:
-        if char in '0123456789':
+        if char in '[0-9]':
             has_digit=True
             digit_verdict="YES"
     return digit_verdict, has_digit
@@ -263,6 +262,15 @@ def read_audit_log(log_path):
             #add the next entry to the end of entries
             entries.append(json.loads(line))
     return entries
+def is_valid_account_name(name):
+    """returns true for plain account name and false for anything else. a plain name has >=30ch and is only letters digits spaces and hyphens.character.isalnum() is True for a letter or a digit. Every account name in credentials.txt is plain."""
+    plainname=True
+    if len(cred[username])<=30:
+        for char in cred[password]:
+                if char not in '[0-9]' or '[a-z]' or '-':
+                    plainname=False
+                    raise KeyError
+    return plainname           
 if __name__=='__main__':
     ##runs the evaluation!
     #here so audit summary only prints if run from main- for testing
@@ -313,4 +321,3 @@ if __name__=='__main__':
         all_checks[check_name]=run_check(check_name, "jsmith", credentials, known_breached)
     with open("all_checks.json", "w") as f:
         json.dump(all_checks, f, indent=2)
-    print(len(read_audit_log(AUDIT_LOG)))
